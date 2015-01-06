@@ -1,6 +1,6 @@
 var room = "lobby";
 var friends = {};
-var parseURL = 'https://api.parse.com/1/classes/chatterbox';
+var parseURL = 'http://127.0.0.1:3000/';
 
 var sanitize = function(string){
   if (typeof string === "string") {
@@ -22,9 +22,10 @@ var sanitizeObj = function(object) {
 
 var display = function () {
   $.get(parseURL,
-    {where: {'roomname': room}, limit: 100, order: "-createdAt"},
+    // {where: {'roomname': room}, limit: 100, order: "-createdAt"},
     function (data) {
       $('.chat').html('');
+      debugger;
       for (var i = 0; i < data.results.length; i++) {
         var $li = $("<li>");
         $(".chat").prepend($li);
@@ -82,7 +83,7 @@ var display = function () {
 };
 var newRoom = true;
 display();
-setInterval(display, 1000);
+setInterval(display, 10000);
 
 var send = function (text) {
   var user = window.location.search;
@@ -107,7 +108,7 @@ var send = function (text) {
 
 var getRooms = function() {
   $.get(parseURL,
-    {limit: 100, order: "-createdAt"},
+    // {limit: 100, order: "-createdAt"},
     function (data) {
       var rooms = {};
       rooms[room] = true;
