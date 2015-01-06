@@ -25,7 +25,6 @@ var display = function () {
     // {where: {'roomname': room}, limit: 100, order: "-createdAt"},
     function (data) {
       $('.chat').html('');
-      debugger;
       for (var i = 0; i < data.results.length; i++) {
         var $li = $("<li>");
         $(".chat").prepend($li);

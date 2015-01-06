@@ -21,6 +21,8 @@ this file and include it in basic-server.js so that it actually works.
 //
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
+
+
 var defaultCorsHeaders = {
 
   "access-control-allow-origin": "*",
@@ -54,10 +56,21 @@ exports.requestHandler = function(request, response) {
   var statusCode = 200;
   if (request.method === "POST") {
     request.on("data", function(chunk) {
-      console.log(JSON.parse(chunk));
+      // console.log(JSON.parse(chunk));
       storage.push(JSON.parse(chunk));
     });
     statusCode = 201;
+  }
+
+  var routes = {
+    "": "basecase",
+    "classes": "test writers are liars"
+  };
+
+  var path = request.url.split("/");
+
+  if (routes[path[1]] === undefined) {
+    statusCode = 404;
   }
 
   // See the note below about CORS headers.
