@@ -101,6 +101,7 @@ var send = function (text) {
     JSON.stringify(message),
     function (data) {
       console.log('chatterbox: Message sent');
+      display();
     }
   );
 };
@@ -130,14 +131,12 @@ $(document).ready(function() {
   $('.textSend').on('click', function() {
     send($('.inputText').val());
     $('.inputText').val('');
-    display();
   });
 
   $('.inputText').keypress(function(e) {
     if (e.keyCode === 13) {
       send($('.inputText').val());
       setTimeout(function() {$('.inputText').val(null);}, 0);
-      display();
     }
   });
 
