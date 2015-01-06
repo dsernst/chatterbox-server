@@ -23,7 +23,7 @@ var sanitizeObj = function(object) {
 var display = function () {
   $.get(parseURL,
     // {where: {'roomname': room}, limit: 100, order: "-createdAt"},
-    {order: "-createdAt"},
+    {order: "-createdAt", limit: 100},
     function (data) {
       $('.chat').html('');
       for (var i = 0; i < data.results.length; i++) {

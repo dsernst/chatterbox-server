@@ -96,6 +96,11 @@ exports.requestHandler = function(request, response) {
         storage = storage.reverse();
       }
     }
+    if (getData.limit) {
+      if (getData.limit > 0 && getData.limit < storage.length) {
+        storage = storage.slice(0, getData.limit);
+      }
+    }
     sendResponse();
   };
 
