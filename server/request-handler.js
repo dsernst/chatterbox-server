@@ -83,6 +83,7 @@ exports.requestHandler = function(request, response) {
   // If they send us data with their GET request to filter results
   var getFilter = function(){
     var getData = require("url").parse(request.url, true).query;
+    console.log(getData);
     if (getData.order) {
       var reverse = false;
       if (getData.order[0] === "-") {
@@ -100,6 +101,15 @@ exports.requestHandler = function(request, response) {
       if (getData.limit > 0 && getData.limit < storage.length) {
         storage = storage.slice(0, getData.limit);
       }
+    }
+    var wheres = _.reduce(getData, function(memo, value, key) {
+      if (key.slice(0,5) === "where") {
+        memo[key.slice(6, key.length - 1)] = value;
+      }
+      return memo;
+    }, {});
+    if (Object.keys(wheres).length > 0) {
+      storage = _.where(storage, wheres);
     }
     sendResponse();
   };

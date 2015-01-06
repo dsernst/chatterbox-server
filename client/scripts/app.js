@@ -22,8 +22,7 @@ var sanitizeObj = function(object) {
 
 var display = function () {
   $.get(parseURL,
-    // {where: {'roomname': room}, limit: 100, order: "-createdAt"},
-    {order: "-createdAt", limit: 100},
+    {"where": {"roomname": room}, order: "-createdAt", limit: 100},
     function (data) {
       $('.chat').html('');
       for (var i = 0; i < data.results.length; i++) {
@@ -83,7 +82,7 @@ var display = function () {
 };
 var newRoom = true;
 display();
-setInterval(display, 10000);
+setInterval(display, 4000);
 
 var send = function (text) {
   var user = window.location.search;
@@ -109,7 +108,7 @@ var send = function (text) {
 
 var getRooms = function() {
   $.get(parseURL,
-    // {limit: 100, order: "-createdAt"},
+    {limit: 100, order: "-createdAt"},
     function (data) {
       var rooms = {};
       rooms[room] = true;
@@ -124,9 +123,9 @@ var getRooms = function() {
       }
     }
   );
-}
+};
 getRooms();
-setInterval(getRooms, 5000);
+setInterval(getRooms, 15000);
 
 $(document).ready(function() {
   $('.textSend').on('click', function() {
