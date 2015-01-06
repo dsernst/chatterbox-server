@@ -1,4 +1,5 @@
 var fs = require("fs");
+var _ = require("underscore");
 
 /*************************************************************
 
@@ -70,13 +71,33 @@ exports.requestHandler = function(request, response) {
     }
     if (request.method === "POST") {
       saveNewMessage();
+    } else if (request.method === "GET") {
+      getFilter();
     }
-    sendResponse();
   });
 
   // The outgoing status.
   var statusCode = 200;
 
+
+  // If they send us data with their GET request to filter results
+  var getFilter = function(){
+    var getData = require("url").parse(request.url, true).query;
+    if (getData.order) {
+      var reverse = false;
+      if (getData.order[0] === "-") {
+        reverse = true;
+        getData.order = getData.order.slice(1);
+      }
+      storage = _.sortBy(storage, function(result) {
+        return result[getData.order];
+      });
+      if (reverse) {
+        storage = storage.reverse();
+      }
+    }
+    sendResponse();
+  };
 
   // If they write a new message
   var saveNewMessage = function() {
@@ -97,6 +118,7 @@ exports.requestHandler = function(request, response) {
       );
     });
     statusCode = 201;
+    sendResponse();
   };
 
   var routes = {
@@ -105,6 +127,9 @@ exports.requestHandler = function(request, response) {
   };
 
   var path = request.url.split("/");
+  if (path[1][0] === "?") {
+    path[1] = "";
+  }
 
   if (routes[path[1]] === undefined) {
     statusCode = 404;
@@ -122,7 +147,6 @@ exports.requestHandler = function(request, response) {
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
   response.writeHead(statusCode, headers);
-
 
 
   // Make sure to always call response.end() - Node may not send
