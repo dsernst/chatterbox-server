@@ -81,7 +81,9 @@ exports.requestHandler = function(request, response) {
   // If they write a new message
   var saveNewMessage = function() {
     request.on("data", function(chunk) {
-      storage.push(JSON.parse(chunk));
+      var newMsg = JSON.parse(chunk);
+      newMsg.createdAt = JSON.stringify(Date.now());
+      storage.push(newMsg);
       fs.writeFile("./storage", JSON.stringify(storage), function(err) {
           if(err) {
             console.log(err);
