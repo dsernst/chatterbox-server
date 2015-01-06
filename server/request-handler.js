@@ -1,3 +1,5 @@
+var fs = require("fs");
+
 /*************************************************************
 
 You should implement your request handler function in this file.
@@ -31,8 +33,6 @@ var defaultCorsHeaders = {
   "access-control-max-age": 10 // Seconds.
 };
 
-var storage = [];
-
 exports.requestHandler = function(request, response) {
 
   // Request and Response come from node's http module.
@@ -51,16 +51,51 @@ exports.requestHandler = function(request, response) {
   // console.logs in your code.
   console.log("Serving request type " + request.method + " for url " + request.url);
 
+  var createBlank = function () {
+    var empty = JSON.stringify([]);
+    fs.writeFile("storage", empty);
+  };
+
+
+  // Read storage file, and make into array.
+  var storage = [];
+  fs.readFile("./storage", function(err, data) {
+    if (err) {
+      if (err.code === "ENOENT") {
+        createBlank();
+      }
+      console.log(err);
+    } else {
+      storage = JSON.parse(data);
+    }
+    if (request.method === "POST") {
+      saveNewMessage();
+    }
+    sendResponse();
+  });
 
   // The outgoing status.
   var statusCode = 200;
-  if (request.method === "POST") {
+
+
+  // If they write a new message
+  var saveNewMessage = function() {
     request.on("data", function(chunk) {
-      // console.log(JSON.parse(chunk));
       storage.push(JSON.parse(chunk));
+      fs.writeFile("./storage", JSON.stringify(storage), function(err) {
+          if(err) {
+            console.log(err);
+            if (err.code === "ENOENT") {
+              createBlank();
+            }
+          } else {
+              console.log("The file was saved!");
+          }
+        }
+      );
     });
     statusCode = 201;
-  }
+  };
 
   var routes = {
     "": "basecase",
@@ -86,6 +121,8 @@ exports.requestHandler = function(request, response) {
   // which includes the status and all headers.
   response.writeHead(statusCode, headers);
 
+
+
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
   // response.end() will be the body of the response - i.e. what shows
@@ -93,5 +130,7 @@ exports.requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end(JSON.stringify({results: storage}));
+  var sendResponse = function () {
+    response.end(JSON.stringify({results: storage}));
+  };
 };
